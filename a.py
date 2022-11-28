@@ -15,16 +15,17 @@ dist_list1 = []
 dist_list2 = []
 k = 2
 # Part 1. GET DATA
-# open csv file then save data in rows to data array
-# with open("./data/wine.csv",'r') as file:
-#     csvfile = csv.reader(file)
-#     for row in csvfile:
-#         data.append(row)
+#open csv file then save data in rows to data array
 
-with open("./sample.csv",'r') as file:
+with open("./data/wine.csv",'r') as file:
     csvfile = csv.reader(file)
     for row in csvfile:
         data.append(row)
+
+# with open("./sample.csv",'r') as file:
+#     csvfile = csv.reader(file)
+#     for row in csvfile:
+#         data.append(row)
 
 options = data[0];
 data_length = len(data)
@@ -56,76 +57,87 @@ for i in range(0,data_length):
     xy = [data[i][index_arr[0]],data[i][index_arr[1]]]
     xy_arr.append(xy)
 
-print(xy_arr)
 # xy_arr is the original datapoints
 # datapoints would be use for the loop
 
-# LOOP HERE
+# while len(k_centroids) != n_cluster:
+#     random_k = random.randint(1,(data_length-1))
+#     if xy_arr[random_k] not in k_centroids:
+#         k_centroids.append(float(xy_arr[random_k]))
 
-# get k data points
-datapoints = copy.deepcopy(xy_arr)
-while len(k_centroids) != k:
-    random_k = random.randint(1,(data_length-1))
-    rand_k.append(random_k)
-    k_centroids.append(xy_arr[random_k])
-
+k_centroids = [[11.76,2.68],[13.77,1.9]]
+#k_centroids = [[2,2],[4,4]]
 kc_length = len(k_centroids)
-xy_length = len(datapoints)
 
-# FOR TESTING
-k_centroids.clear()
-rand_k.clear()
-rand_k = [4,6]
-k_centroids = [[2,2],[4,4]]
-# CHANGE LATER
+run = 1
+while run == 1:
+    # get k data points
+    datapoints = copy.deepcopy(xy_arr)
 
-# get the distances
-for kc in range(0,kc_length):    # loop k centroids
-    for xy in range(1,xy_length):          # loop data points
-        eudistance = 0
-        for index in range(0,2):
-            x = float(datapoints[xy][index])
-            c = float(k_centroids[kc][index])
-            eudistance = ((x - c)**2) + eudistance
-        eudistance = math.sqrt(eudistance)
-        datapoints[xy].append(eudistance)
+    xy_length = len(datapoints)
+    # get the distances
+    for kc in range(0,kc_length):    # loop k centroids
+        for xy in range(1,xy_length):          # loop data points
+            eudistance = 0
+            for index in range(0,2):
+                x = float(datapoints[xy][index])
+                c = float(k_centroids[kc][index])
+                #c = k_centroids[kc][index]
+                eudistance = ((x - c)**2) + eudistance
+            eudistance = math.sqrt(eudistance)
+            datapoints[xy].append(eudistance)
 
-# get which datapoint is close then group by k
-for xy in range(1,xy_length):
-    for kc in range(0,kc_length):
-        if kc == 0:
-            min = datapoints[xy][kc]
-            group = xy_arr[rand_k[kc]]
-        else:
-            if datapoints[xy][kc] < min:
-                min = datapoints[xy][kc]
-                group = xy_arr[rand_k[kc]]
-    datapoints[xy].append(group)
+    # get which datapoint is close then group by k
+    temp = []
+    for xy in range(1,xy_length):
+        temp.clear()
+        for kc in range(0,kc_length):
+            temp.append(datapoints[xy][2+kc])
+            min_value = min(temp)
+            min_index = temp.index(min_value)
+        datapoints[xy].append(k_centroids[min_index])
 
-# group = 2 + k
-group_ind = 2 + kc_length # index of the groupings
+    # group = 2 + k
+    group_ind = 2 + kc_length # index of the groupings
 
-for xy in range(1,xy_length):
-    print(datapoints[xy])   
-
-# PART 3. Solve for new centroid
-
-# count class
-class_count = {}
-for i in range(0,k):
-    for j in range(1,xy_length):
-        if j not in rand_k:
-            if datapoints[j][group_ind] == xy_arr[rand_k[i]]:
+    # PART 3. Solve for new centroid
+    # count class
+    print(k_centroids)
+    #print(datapoints)
+    class_count = {}
+    for i in range(0,n_cluster):
+        for j in range(1,xy_length):
+            if datapoints[j][group_ind] == k_centroids[i]:
                 if class_count.get(i) is None:
                     class_count[i] = 1
                 else:
                     class_count[i] += 1
 
-print(class_count)
+    prev_centroids = copy.deepcopy(k_centroids)
+    #print("Current",k_centroids)
+    new_centroids = []
 
+    print(class_count)
+    for kc in range(0,kc_length):
+        xSum = 0
+        ySum = 0
+        for xy in range(1,xy_length):
+            if datapoints[xy][len(datapoints[1])-1] == k_centroids[kc]:
+                # xSum += float(datapoints[xy][0]) 
+                # ySum += float(datapoints[xy][1])
+                xSum += float(datapoints[xy][0]) 
+                ySum += float(datapoints[xy][1])
+        x = xSum/class_count.get(kc)
+        y = ySum/class_count.get(kc)
+        new_centroid = [x,y]
+        new_centroids.append(new_centroid)
 
-# reset values
-rand_k.clear()
-k_centroids.clear()
-datapoints.clear()
+    #print("New",new_centroids)
+    if(new_centroids == prev_centroids):
+        run = 0
+
+    k_centroids.clear()
+    k_centroids = copy.deepcopy(new_centroids)
+    # reset values
+    datapoints.clear()
 
