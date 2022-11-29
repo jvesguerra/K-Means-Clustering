@@ -14,6 +14,7 @@ k_centroids = []
 rand_k = []
 dist_list1 = []
 dist_list2 = []
+
 # Part 1. GET DATA
 #open csv file then save data in rows to data array
 
@@ -29,7 +30,7 @@ output = open('output.txt', 'w')
 #     for row in csvfile:
 #         data.append(row)
 
-options = data[0];
+options = data[0]
 data_length = len(data)
 
 # PRINT MENU
@@ -53,8 +54,8 @@ while n_cluster > 10:
     n_cluster = int(input("Enter n cluster (max is 10): "))
     selected.append(n_cluster)
     k = n_cluster
-# Part 2.
 
+# Part 2.
 # create the collection of x and y data points
 for i in range(0,data_length):
     xy = [data[i][index_arr[0]],data[i][index_arr[1]]]
@@ -69,7 +70,7 @@ while len(k_centroids) != n_cluster:
     if xy_arr[random_k] not in k_centroids:
         k_centroids.append((xy_arr[random_k]))
 
-# k_centroids = [[11.76,2.68],[13.77,1.9]]
+#k_centroids = [[11.76,2.68],[13.77,1.9]]
 #k_centroids = [[2,2],[4,4]]
 kc_length = len(k_centroids)
 
@@ -86,7 +87,6 @@ while run == 1:
             for index in range(0,2):
                 x = float(datapoints[xy][index])
                 c = float(k_centroids[kc][index])
-                #c = k_centroids[kc][index]
                 eudistance = ((x - c)**2) + eudistance
             eudistance = math.sqrt(eudistance)
             datapoints[xy].append(eudistance)
